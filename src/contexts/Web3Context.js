@@ -4,8 +4,8 @@ import { buyCalldata } from "calldata";
 
 const Web3Context = createContext();
 
-const TOKEN_CONTRACT = "0xe6258238e9AB0FFDd331AE6441201d2E666756bd";
-const ISSURANCE_CONTRACT = "0xc7f0c506C9DaFCB5ec4938E2Df61ec6c700e6bfE";
+export const TOKEN_CONTRACT = "0xe6258238e9AB0FFDd331AE6441201d2E666756bd";
+export const ISSURANCE_CONTRACT = "0xc7f0c506C9DaFCB5ec4938E2Df61ec6c700e6bfE";
 
 export const Web3Provider = ({ children }) => {
   const [address, setAddress] = useState(null);
@@ -53,71 +53,14 @@ export const Web3Provider = ({ children }) => {
     }
   };
 
-  const callFaucet = () => {
-    if (isLogin()) {
-      library.eth.sendTransaction(
-        {
-          from: address,
-          to: TOKEN_CONTRACT,
-          data: "0x8d0033c3",
-        },
-        (err, result) => {
-          if (err) {
-            alert(err);
-          } else {
-            alert(result);
-          }
-        }
-      );
-    } else {
-      alert("Please login to metamask.");
-    }
-  };
-
-  const buy = (id) => {
-    if (isLogin()) {
-      // get hash
-      library.eth.call(
-        {
-          to: ISSURANCE_CONTRACT,
-          data: `0x3619112a000000000000000000000000${address.slice(
-            2
-          )}000000000000000000000000000000000000000000000000000000000000000${id}`,
-        },
-        (_, hash) => {
-          // buy
-          library.eth.sendTransaction(
-            {
-              from: address,
-              to: ISSURANCE_CONTRACT,
-              data: buyCalldata.replace(
-                "b68bc513e988882a97ce6addf7aae0b585d162e7b9c3c6265f7d254eb936d12b",
-                hash.slice(2)
-              ),
-            },
-            (err, result) => {
-              if (err) {
-                alert(err);
-              } else {
-                alert(result);
-              }
-            }
-          );
-        }
-      );
-    } else {
-      alert("Please login to metamask.");
-    }
-  };
-
   return (
     <Web3Context.Provider
       value={{
         address: address,
         login: login,
+        isLogin: isLogin,
         balance: balance,
-        callFaucet: callFaucet,
-        buy: buy,
+        library: library,
       }}
     >
       {children}

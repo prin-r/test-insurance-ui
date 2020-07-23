@@ -6,7 +6,11 @@ import { StripeProvider, Elements } from "react-stripe-elements";
 import products from "products.json";
 import numeral from "numeral";
 import CardForm from "./form";
-import { useWeb3ContextState } from "contexts/Web3Context";
+import {
+  useWeb3ContextState,
+  TOKEN_CONTRACT,
+  ISSURANCE_CONTRACT,
+} from "contexts/Web3Context";
 
 const Article = styled.article`
   padding: 100px 20px 20px;
@@ -280,7 +284,100 @@ const BalanceContainer = styled.div`
 export default ({ match }) => {
   const vendorCode = match.params.vendorCode;
   const product = products[vendorCode];
-  const { address, login, balance, callFaucet, buy } = useWeb3ContextState();
+  const { address, login, balance, library, isLogin } = useWeb3ContextState();
+  const [haveTicket, setHaveTicket] = useState(false);
+
+  useEffect(() => {
+    if (isLogin()) {
+      checkIssurance(vendorCode);
+    }
+  }, [address, vendorCode]);
+
+  const callFaucet = () => {
+    if (isLogin()) {
+      library.eth.sendTransaction(
+        {
+          from: address,
+          to: TOKEN_CONTRACT,
+          data: "0x8d0033c3",
+        },
+        (err, result) => {
+          if (err) {
+            alert(err);
+          } else {
+            alert(result);
+          }
+        }
+      );
+    } else {
+      alert("Please login to metamask.");
+    }
+  };
+
+  const buy = (id) => {
+    if (isLogin()) {
+      // get hash
+      library.eth.call(
+        {
+          to: ISSURANCE_CONTRACT,
+          data: `0x3619112a000000000000000000000000${address.slice(
+            2
+          )}000000000000000000000000000000000000000000000000000000000000000${id}`,
+        },
+        (_, hash) => {
+          // buy
+          library.eth.sendTransaction(
+            {
+              from: address,
+              to: ISSURANCE_CONTRACT,
+              data: buyCalldata.replace(
+                "b68bc513e988882a97ce6addf7aae0b585d162e7b9c3c6265f7d254eb936d12b",
+                hash.slice(2)
+              ),
+            },
+            (err, result) => {
+              if (err) {
+                alert(err);
+              } else {
+                alert(result);
+              }
+            }
+          );
+        }
+      );
+    } else {
+      alert("Please login to metamask.");
+    }
+  };
+
+  const checkIssurance = (id) => {
+    if (isLogin()) {
+      // get hash
+      library.eth.call(
+        {
+          to: ISSURANCE_CONTRACT,
+          data: `0x3619112a000000000000000000000000${address.slice(
+            2
+          )}000000000000000000000000000000000000000000000000000000000000000${id}`,
+        },
+        (_, hash) => {
+          // check
+          library.eth.call(
+            {
+              to: ISSURANCE_CONTRACT,
+              data: `0x8993021b${hash.slice(2)}`,
+            },
+            (_, data) =>
+              data && data.length > 840
+                ? setHaveTicket(true)
+                : setHaveTicket(false)
+          );
+        }
+      );
+    } else {
+      alert("Please login to metamask.");
+    }
+  };
 
   return (
     <Article>
@@ -333,7 +430,10 @@ export default ({ match }) => {
               React.null
             )}
           </BalanceContainer>
-          <button onClick={() => buy(vendorCode)}>Buy</button>
+          <p>Have Issurance: {haveTicket ? "Yes" : "No"}</p>
+          <button onClick={() => buy(vendorCode)} disabled={haveTicket}>
+            Buy
+          </button>
         </>
       )}
     </Article>
