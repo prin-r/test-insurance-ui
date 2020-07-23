@@ -1,26 +1,22 @@
-import 'sanitize.css/sanitize.css';
+import "sanitize.css/sanitize.css";
 
-import React, { Component } from 'react';
-import { Helmet } from 'react-helmet';
-import styled from 'styled-components';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import WebSocketAsPromised from 'websocket-as-promised';
-import uuid from 'uuid';
-import bg5_img from '../../assets/bg5.jpg';
+import React, { Component } from "react";
+import { Helmet } from "react-helmet";
+import styled from "styled-components";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import bg5_img from "../../assets/bg5.jpg";
 
 // Components
-import Header from 'components/Header';
-import Console from 'components/Console';
+import Header from "components/Header";
+import Console from "components/Console";
 
 // Pages
-import Catalog from 'containers/Catalog';
-import Checkout from 'containers/Checkout';
-import Claim from 'containers/Claim';
-import Dashboard from 'containers/Dashboard';
-import NotFound from 'containers/NotFound';
+import Catalog from "containers/Catalog";
+import Checkout from "containers/Checkout";
+import Claim from "containers/Claim";
+import NotFound from "containers/NotFound";
 
-import GlobalStyles from './global-styles';
-
+import GlobalStyles from "./global-styles";
 
 const Layout = styled.div`
   display: flex;
@@ -52,7 +48,7 @@ class Root extends Component {
    * On component mounted livecycle hook
    */
   componentDidMount() {
-    this.openWs();
+    // TODO
   }
 
   /**
@@ -66,34 +62,10 @@ class Root extends Component {
       return Promise.reject();
     }
 
-    return window.socket.sendRequest({ type, data }, { requestId: window.socket.getUniqueID() });
-  };
-
-  /**
-   * Create WebSocket connection
-   */
-  openWs = () => {
-    const wsp = new WebSocketAsPromised(`${window.location.origin.replace(/^http/, 'ws')}/api/ws`, {
-      packMessage: data => JSON.stringify(data),
-      unpackMessage: message => JSON.parse(message),
-      attachRequestId: (data, requestId) => Object.assign({ id: requestId }, data),
-      extractRequestId: data => data && data.id,
-    });
-
-    wsp.getUniqueID = () => uuid();
-
-    wsp.open()
-      .then(() => {
-        window.socket = wsp;
-        setInterval(() => this.request('keepAlive'), 20000);
-      })
-      .catch(e => console.error(e));
-    wsp.onError.addListener(console.error);
-    wsp.onClose.addListener(() => this.pushLog(JSON.stringify({ app: 'UI', msg: 'WS connection closed' })));
-    wsp.onMessage.addListener((msg) => {
-      console.log(msg);
-      //this.pushLog(msg);
-    });
+    return window.socket.sendRequest(
+      { type, data },
+      { requestId: window.socket.getUniqueID() }
+    );
   };
 
   /**
@@ -115,10 +87,7 @@ class Root extends Component {
     return (
       <Router>
         <Layout>
-          <Helmet
-            titleTemplate="%s - eStore"
-            defaultTitle="eStore"
-          >
+          <Helmet titleTemplate="%s - eStore" defaultTitle="eStore">
             <meta name="description" content="Electronic store" />
           </Helmet>
           <GlobalStyles />
@@ -129,9 +98,18 @@ class Root extends Component {
             <Page>
               <Switch>
                 <Route exact path="/" component={Catalog} />
-                <Route exact path="/checkout/:vendorCode" render={props => <Checkout request={this.request} {...props} />} />
-                <Route exact path="/claim" render={() => <Claim request={this.request} />} />
-                <Route exact path="/dashboard" render={() => <Dashboard request={this.request} />} />
+                <Route
+                  exact
+                  path="/checkout/:vendorCode"
+                  render={(props) => (
+                    <Checkout request={this.request} {...props} />
+                  )}
+                />
+                <Route
+                  exact
+                  path="/claim"
+                  render={() => <Claim request={this.request} />}
+                />
                 <Route path="" component={NotFound} />
               </Switch>
             </Page>

@@ -13,7 +13,7 @@
     "departureYearMonthDay": "2020-02-20",
     "departureTime": 1590000000,
     "arrivalTime": 1590200000,
-    "payoutOptions": [0,0,20,30,30]
+    "payoutOptions": [0, 0, 20, 30, 30]
   },
   {
     "vendorCode": "2",
@@ -29,22 +29,6 @@
     "departureYearMonthDay": "2020-02-20",
     "departureTime": 1590000000,
     "arrivalTime": 1590200000,
-    "payoutOptions": [0,0,20,30,30]
-  },
-  {
-    "vendorCode": "3",
-    "product": "KLM KL 1105",
-    "carrierFlightNumber": "KL/1105",
-    "details": "KLM Flight KL 1105 from Amsterdam (AMS) to Stockholm (ARN)",
-    "date": "20/02/2020",
-    "departure": "06:50",
-    "arrival": "08:55",
-    "image": "/assets/klm.png",
-    "price": "17.50",
-    "currency": "EUR",
-    "departureYearMonthDay": "2020-02-20",
-    "departureTime": 1590000000,
-    "arrivalTime": 1590200000,
-    "payoutOptions": [0,0,20,30,30]
+    "payoutOptions": [0, 0, 20, 30, 30]
   }
 ]
