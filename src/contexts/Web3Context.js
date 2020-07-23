@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import Web3 from "web3";
-import { buyCalldata } from "calldata";
 
 const Web3Context = createContext();
 

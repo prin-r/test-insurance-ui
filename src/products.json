@@ -1,6 +1,6 @@
 [
   {
-    "vendorCode": "1",
+    "vendorCode": "0",
     "product": "Cathay Pacific",
     "carrierFlightNumber": "CX/100",
     "details": "Cathay Pacific CX 100 from Sydney (SYD) to Hong Kong (HKG)",
@@ -16,7 +16,7 @@
     "payoutOptions": [0, 0, 20, 30, 30]
   },
   {
-    "vendorCode": "2",
+    "vendorCode": "1",
     "product": "Air Canada",
     "carrierFlightNumber": "AC/80",
     "details": "Air Canada AC 80 from Toronto (YYZ) to Tel Aviv-Yafo (TLV)",
