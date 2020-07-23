@@ -1,19 +1,17 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { Helmet } from 'react-helmet';
-import styled from 'styled-components';
-import { StripeProvider, Elements } from 'react-stripe-elements';
-import products from 'products.json';
-import numeral from 'numeral';
-import CardForm from './form';
-
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Helmet } from "react-helmet";
+import styled from "styled-components";
+import { StripeProvider, Elements } from "react-stripe-elements";
+import products from "products.json";
+import numeral from "numeral";
+import CardForm from "./form";
 
 const Article = styled.article`
   padding: 100px 20px 20px;
   width: 900px;
   margin: 0 auto;
   color: #fff;
-
 `;
 
 const Product = styled.div`
@@ -38,7 +36,7 @@ const CheckoutForm = styled.div`
 
 const Option = styled.div`
   margin-bottom: 8px;
-  
+
   span {
     margin-left: 10px;
   }
@@ -59,13 +57,17 @@ class Checkout extends Component {
   state = {
     insurance: 1,
     insuranceOptions: [
-      { label: 'No', price: 0 },
-      { label: '1 year', price: 10 },
-      { label: '2 year', price: 15 },
-      { label: '3 year', price: 20 },
+      { label: "No", price: 0 },
+      { label: "1 year", price: 10 },
+      { label: "2 year", price: 15 },
+      { label: "3 year", price: 20 },
     ],
     product: products.find((p) => {
-      const { match: { params: { vendorCode } } } = this.props;
+      const {
+        match: {
+          params: { vendorCode },
+        },
+      } = this.props;
       return p.vendorCode === vendorCode;
     }),
 
@@ -90,7 +92,6 @@ class Checkout extends Component {
 
     return price * (1 + insuranceOptions[insurance].price / 100);
   }
-
 
   /**
    * Submit checkout form
@@ -120,23 +121,22 @@ class Checkout extends Component {
         },
       };
 
-      request('newPolicy', input)
-        .then((result) => {
-          console.log(result);
-          this.setState({
-            loading: false,
-            purchase: {
-              product: {
-                vendorCode: product.vendorCode,
-                product: product.product,
-              },
-              policy: {
-                // id: result.events.LogPolicySetState.returnValues._policyId,
-                transactionHash: result.data.transactionHash,
-              },
+      request("newPolicy", input).then((result) => {
+        console.log(result);
+        this.setState({
+          loading: false,
+          purchase: {
+            product: {
+              vendorCode: product.vendorCode,
+              product: product.product,
             },
-          });
+            policy: {
+              // id: result.events.LogPolicySetState.returnValues._policyId,
+              transactionHash: result.data.transactionHash,
+            },
+          },
         });
+      });
     } else {
       this.setState({
         loading: false,
@@ -155,13 +155,19 @@ class Checkout extends Component {
    * @return {*}
    */
   render() {
-
     const {
-      insurance, insuranceOptions, product, loading, purchase,
+      insurance,
+      insuranceOptions,
+      product,
+      loading,
+      purchase,
     } = this.state;
 
-    const NETWORK = 'rinkeby';
-    const etherscanUrl = NETWORK === 'mainnet' ? 'https://etherscan.io' : `https://${NETWORK}.etherscan.io`;
+    const NETWORK = "rinkeby";
+    const etherscanUrl =
+      NETWORK === "mainnet"
+        ? "https://etherscan.io"
+        : `https://${NETWORK}.etherscan.io`;
 
     return (
       <Article>
@@ -170,9 +176,20 @@ class Checkout extends Component {
         </Helmet>
 
         <Product>
-          <div style={{"height": "150px"}}>
-            <span style={{"height": "100%", "verticalAlign": "middle", "display": "inline-block"}}></span>
-            <img src={product.image} style={{"maxHeight": "150px", "verticalAlign": "middle"}} width="200" alt={product.product} />
+          <div style={{ height: "150px" }}>
+            <span
+              style={{
+                height: "100%",
+                verticalAlign: "middle",
+                display: "inline-block",
+              }}
+            ></span>
+            <img
+              src={product.image}
+              style={{ maxHeight: "150px", verticalAlign: "middle" }}
+              width="200"
+              alt={product.product}
+            />
           </div>
 
           <Details>
@@ -184,7 +201,8 @@ class Checkout extends Component {
 
             <p>
               <b>
-                Price: {numeral(product.price).format('0,0.00')} {product.currency}
+                Price: {numeral(product.price).format("0,0.00")}{" "}
+                {product.currency}
               </b>
             </p>
           </Details>
@@ -194,14 +212,25 @@ class Checkout extends Component {
           <CheckoutForm>
             <h3>Checkout</h3>
 
-            <h4>Total: {numeral(this.getTotal(product.price)).format('0,0.00')} {product.currency}</h4>
+            <h4>
+              Total: {numeral(this.getTotal(product.price)).format("0,0.00")}{" "}
+              {product.currency}
+            </h4>
 
             <StripeProvider apiKey="pk_RXwtgk4Z5VR82S94vtwmam6P8qMXQ">
               <Elements>
-                <CardForm handleChange={this.handleChange} handleSubmit={this.handleSubmit} />
+                <CardForm
+                  handleChange={this.handleChange}
+                  handleSubmit={this.handleSubmit}
+                />
               </Elements>
             </StripeProvider>
-            <p><small>For the demo, use card no. 4000 0566 5566 5556 Valid 12/20 CVC 311</small></p>
+            <p>
+              <small>
+                For the demo, use card no. 4000 0566 5566 5556 Valid 12/20 CVC
+                311
+              </small>
+            </p>
           </CheckoutForm>
         )}
 
@@ -212,27 +241,32 @@ class Checkout extends Component {
         )}
 
         {!loading && purchase && (
-        <div style={{ textAlign: 'center' }}>
-          <h3>Congratulations!</h3>
-          <p><b>Your purchase:</b></p>
-          <p>Product: {product.product}</p>
+          <div style={{ textAlign: "center" }}>
+            <h3>Congratulations!</h3>
+            <p>
+              <b>Your purchase:</b>
+            </p>
+            <p>Product: {product.product}</p>
 
-          {purchase.policy && (
-          <div>
-            {/*
+            {purchase.policy && (
+              <div>
+                {/*
             <p><b>Policy ID:</b></p>
             <p>{purchase.policy.id}</p>
             */}
-            <p>
-              <a href={`${etherscanUrl}/tx/${purchase.policy.transactionHash}`} target="_blank" rel="noopener noreferrer">
-                Transaction
-              </a>
-            </p>
+                <p>
+                  <a
+                    href={`${etherscanUrl}/tx/${purchase.policy.transactionHash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Transaction
+                  </a>
+                </p>
+              </div>
+            )}
           </div>
-          )}
-        </div>
         )}
-
       </Article>
     );
   }
