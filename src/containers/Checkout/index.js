@@ -278,8 +278,9 @@ const BalanceContainer = styled.div`
 // }
 
 export default ({ match }) => {
-  const product = products[match.params.vendorCode];
-  const { address, login, balance, callFaucet } = useWeb3ContextState();
+  const vendorCode = match.params.vendorCode;
+  const product = products[vendorCode];
+  const { address, login, balance, callFaucet, buy } = useWeb3ContextState();
 
   return (
     <Article>
@@ -332,6 +333,7 @@ export default ({ match }) => {
               React.null
             )}
           </BalanceContainer>
+          <button onClick={() => buy(vendorCode)}>Buy</button>
         </>
       )}
     </Article>
