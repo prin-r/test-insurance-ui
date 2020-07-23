@@ -11,7 +11,7 @@ import {
   TOKEN_CONTRACT,
   ISSURANCE_CONTRACT,
 } from "contexts/Web3Context";
-import { buyCalldata, claimCalldata } from "calldata";
+import { claimCalldata } from "calldata";
 
 const Article = styled.article`
   padding: 100px 20px 20px;
@@ -109,7 +109,7 @@ export default ({ match }) => {
             {
               from: address,
               to: ISSURANCE_CONTRACT,
-              data: buyCalldata.replace(
+              data: products[id].calldata.replace(
                 "b68bc513e988882a97ce6addf7aae0b585d162e7b9c3c6265f7d254eb936d12b",
                 hash.slice(2)
               ),
@@ -194,6 +194,42 @@ export default ({ match }) => {
     }
   };
 
+  const reset = (id) => {
+    if (isLogin()) {
+      // get hash
+      library.eth.call(
+        {
+          to: ISSURANCE_CONTRACT,
+          data: `0x3619112a000000000000000000000000${address.slice(
+            2
+          )}000000000000000000000000000000000000000000000000000000000000000${id}`,
+        },
+        (_, hash) => {
+          // reset
+          library.eth.sendTransaction(
+            {
+              from: address,
+              to: ISSURANCE_CONTRACT,
+              data: "0x110bfde2b68bc513e988882a97ce6addf7aae0b585d162e7b9c3c6265f7d254eb936d12b".replace(
+                "b68bc513e988882a97ce6addf7aae0b585d162e7b9c3c6265f7d254eb936d12b",
+                hash.slice(2)
+              ),
+            },
+            (err, result) => {
+              if (err) {
+                alert(err);
+              } else {
+                alert(result);
+              }
+            }
+          );
+        }
+      );
+    } else {
+      alert("Please login to metamask.");
+    }
+  };
+
   return (
     <Article>
       <Helmet>
@@ -251,6 +287,9 @@ export default ({ match }) => {
           </button>
           <button onClick={() => claim(vendorCode)} disabled={!haveTicket}>
             Claim
+          </button>
+          <button onClick={() => reset(vendorCode)} disabled={vendorCode != 1}>
+            Reset
           </button>
         </>
       )}
