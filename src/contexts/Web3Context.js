@@ -24,6 +24,8 @@ export const Web3Provider = ({ children }) => {
   useEffect(() => {
     if (isLogin()) {
       getEURBalance();
+      const intervalId = setInterval(() => getEURBalance(), 3000);
+      return () => clearInterval(intervalId);
     }
   }, [address]);
 
