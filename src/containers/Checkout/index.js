@@ -6,6 +6,7 @@ import { StripeProvider, Elements } from "react-stripe-elements";
 import products from "products.json";
 import numeral from "numeral";
 import CardForm from "./form";
+import { Link } from "react-router-dom";
 import {
   useWeb3ContextState,
   TOKEN_CONTRACT,
@@ -58,6 +59,7 @@ const Purchase = styled.div`
 
 const BalanceContainer = styled.div`
   display: flex;
+  align-items: center;
 `;
 
 export default ({ match }) => {
@@ -69,6 +71,8 @@ export default ({ match }) => {
   useEffect(() => {
     if (isLogin()) {
       checkIssurance(vendorCode);
+      const intervalId = setInterval(() => checkIssurance(vendorCode), 3000);
+      return () => clearInterval(intervalId);
     }
   }, [address, vendorCode]);
 
@@ -84,7 +88,7 @@ export default ({ match }) => {
           if (err) {
             alert(err);
           } else {
-            alert(result);
+            alert("https://kovan.etherscan.io/tx/" + result);
           }
         }
       );
@@ -118,7 +122,7 @@ export default ({ match }) => {
               if (err) {
                 alert(err);
               } else {
-                alert(result);
+                alert("https://kovan.etherscan.io/tx/" + result);
               }
             }
           );
@@ -183,7 +187,7 @@ export default ({ match }) => {
               if (err) {
                 alert(err);
               } else {
-                alert(result);
+                alert("https://kovan.etherscan.io/tx/" + result);
               }
             }
           );
@@ -219,7 +223,7 @@ export default ({ match }) => {
               if (err) {
                 alert(err);
               } else {
-                alert(result);
+                alert("https://kovan.etherscan.io/tx/" + result);
               }
             }
           );
@@ -235,6 +239,10 @@ export default ({ match }) => {
       <Helmet>
         <title>Checkout</title>
       </Helmet>
+
+      <Link to="/" style={{ color: "white", fontWeight: "bold" }}>
+        {"⬅ Back"}
+      </Link>
 
       <Product>
         <div style={{ height: "150px" }}>
@@ -275,13 +283,53 @@ export default ({ match }) => {
           <p>Address: {address}</p>
           <BalanceContainer>
             <p>Balance: {balance} EUR</p>
-            {balance < 20 ? (
-              <button onClick={() => callFaucet()}>Faucet</button>
+            {balance < 25 ? (
+              <div style={{ marginLeft: "auto" }}>
+                {"Insufficient funds, please get EUR token from "}
+                <button
+                  onClick={() => callFaucet()}
+                  style={{ maxHeight: "20px" }}
+                >
+                  Faucet
+                </button>
+              </div>
             ) : (
               React.null
             )}
           </BalanceContainer>
-          <p>Have Issurance: {haveTicket ? "Yes" : "No"}</p>
+          <p>Have Issurance: {haveTicket ? "Yes ✅" : "No"}</p>
+          {haveTicket ? (
+            <div>
+              {Number(vendorCode) === 0
+                ? "This flight has been delayed"
+                : "This flight is on time"}
+              <a
+                href={
+                  Number(vendorCode) === 0
+                    ? "https://guanyu-devnet.cosmoscan.io/request/531"
+                    : "https://guanyu-devnet.cosmoscan.io/request/2104"
+                }
+                target="_blank"
+                style={{ color: "white", marginLeft: "30px" }}
+              >
+                See proof on Bandchain ⇗
+              </a>
+              <a
+                href={
+                  Number(vendorCode) === 0
+                    ? "https://api.flightstats.com/flex/flightstatus/rest/v2/json/flight/status/CX/100/dep/2020/7/22?appId=483244b1&appKey=078d253494c896ea92f2c6e37331c6dc&utc=true&airport=SYD"
+                    : "https://api.flightstats.com/flex/flightstatus/rest/v2/json/flight/status/AC/80/dep/2020/7/23?appId=483244b1&appKey=078d253494c896ea92f2c6e37331c6dc&utc=true&airport=YYZ"
+                }
+                target="_blank"
+                style={{ color: "white", marginLeft: "30px" }}
+              >
+                See on Cirium API ⇗
+              </a>
+            </div>
+          ) : (
+            React.null
+          )}
+          <div style={{ marginTop: "20px" }} />
           <button onClick={() => buy(vendorCode)} disabled={haveTicket}>
             Buy
           </button>
